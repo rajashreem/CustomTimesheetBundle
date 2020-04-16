@@ -1,0 +1,18 @@
+{% block date_widget -%}
+    {%- if widget == 'single_text' -%}
+        <div class="input-group">
+            <div class="input-group-addon">
+                <a href="#" onclick="$('#{{ id }}').val(moment().format('{{ attr['data-format'] }}')).trigger('change')"><i class="fa fa-calendar-alt"></i></a>
+            </div>
+            {% set attr = attr|merge({'data-datepickerenable':'on'}) %}
+
+            {# need to do this to avoid the autofocus in date field without changing original codebase. #}
+            {# Please check KimaiAjaxModalForm implementation #}
+            {% set attr = attr|merge({'data-datetimepicker':'on'}) %}
+
+            {{ block('form_widget_simple') }}
+        </div>
+    {%- else -%}
+        {{ block('form_widget_simple') }}
+    {%- endif -%}
+{%- endblock date_widget %}

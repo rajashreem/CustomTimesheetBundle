@@ -1,0 +1,28 @@
+{% extends '@CustomTimesheet/layout-listing.html.twig' %}
+{% import "timesheet/actions.html.twig" as actions %}
+
+{% set tableName = 'timesheet' %}
+{% set paginationRoute = 'timesheet_paginated' %}
+{% set createRoute = 'custom_timesheet_create' %}
+{% set editRoute = 'custom_timesheet_edit' %}
+{% set canSeeRate = is_granted('view_rate_own_timesheet') %}
+{% set canSeeUsername = false %}
+{% set allowMarkdown = true %}
+
+{% block page_title %}{{ 'timesheet.title'|trans }}{% endblock %}
+{% block page_actions %}
+    {% import "macros/widgets.html.twig" as widgets %}
+
+    {% set actions = {'search': {'class': 'search-toggle visible-xs-inline'}} %}
+    {% set actions = actions|merge({'visibility': {'modal': '#modal_timesheet'}}) %}
+    {% if is_granted('create_own_timesheet') %}
+        {% set actions = actions|merge({'create': {'url': path('custom_timesheet_create'), 'class': 'modal-ajax-form'}}) %}
+    {% endif %}
+
+    {% set event = trigger('actions.timesheets', {'actions': actions, 'view': 'index'}) %}
+    {{ widgets.page_actions(event.payload.actions) }}
+{% endblock %}
+
+{% block row_action %}
+    {{- actions.timesheet(entry, 'index') -}}
+{% endblock %}

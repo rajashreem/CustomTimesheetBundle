@@ -1,0 +1,55 @@
+{% extends app.request.xmlHttpRequest ? 'form.html.twig' : 'base.html.twig' %}
+{% import "macros/widgets.html.twig" as widgets %}
+
+{% form_theme form "@CustomTimesheet/theme.html.twig" %}
+
+{% block main %}
+    {% set formEditTemplate = app.request.xmlHttpRequest ? 'default/_form_modal.html.twig' : 'default/_form.html.twig' %}
+    {% set formOptions = {
+        'title': (timesheet.id ? 'timesheet.edit'|trans : 'create'|trans),
+        'form': form,
+        'back': path(route_back)
+    } %}
+    {% embed formEditTemplate with formOptions %}
+        {% block form_body %}
+            {% if form.begin is defined or form.duration is defined %}
+            <div class="row">
+                {% if form.begin is defined %}
+                    <div class="col-md-4">
+                        {{ form_row(form.begin) }}
+                    </div>
+                {% endif %}
+                {% if form.duration is defined %}
+                    <div class="col-md-4">
+                        {{ form_row(form.duration) }}
+                    </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="row">
+                {% if form.customer is defined %}
+                    <div class="col-md-4">
+                        {{ form_row(form.customer) }}
+                    </div>
+                {% endif %}
+                {% if form.project is defined %}
+                    <div class="col-md-4">
+                        {{ form_row(form.project) }}
+                    </div>
+                {% endif %}
+                {% if form.activity is defined %}
+                    <div class="col-md-4">
+                        {{ form_row(form.activity) }}
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if form.description is defined %}
+                {{ form_row(form.description) }}
+            {% endif %}
+
+            {{ form_widget(form) }}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
