@@ -240,7 +240,6 @@ class CustomTimesheetController extends TimesheetAbstractController
         return $this->createForm(CustomTimesheetEditForm::class, $entry, [
             'action' => $this->generateUrl($this->getCreateRoute()),
             'allow_begin_datetime' => $mode->canEditBegin(),
-            'allow_duration' => $mode->canEditDuration(),
             'customer' => true,
         ]);
     }
@@ -260,7 +259,6 @@ class CustomTimesheetController extends TimesheetAbstractController
                 'page' => $page,
             ]),
             'allow_begin_datetime' => $mode->canEditBegin(),
-            'allow_duration' => $mode->canEditDuration(),
             'customer' => true,
         ]);
     }

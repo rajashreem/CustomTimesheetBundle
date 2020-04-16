@@ -97,9 +97,7 @@ class CustomTimesheetEditForm extends AbstractType
             ]));
         }
 
-        if ($options['allow_duration']) {
-            $this->addDuration($builder);
-        }
+        $this->addDuration($builder);
 
         if ($this->showCustomer($options, $isNew, $customerCount)) {
             $this->addCustomer($builder, $customer);
@@ -176,14 +174,11 @@ class CustomTimesheetEditForm extends AbstractType
             'csrf_field_name' => '_token',
             'csrf_token_id' => 'timesheet_edit',
             'include_user' => false,
-            'include_exported' => false,
-            'include_rate' => true,
             'docu_chapter' => 'timesheet.html',
             'method' => 'POST',
             'date_format' => null,
             'customer' => false, // for API usage
             'allow_begin_datetime' => true,
-            'allow_duration' => false,
             'attr' => [
                 'data-form-event' => 'kimai.timesheetUpdate',
                 'data-msg-success' => 'action.update.success',
