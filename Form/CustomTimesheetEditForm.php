@@ -10,6 +10,7 @@ use App\Repository\CustomerRepository;
 use App\Repository\ProjectRepository;
 use App\Timesheet\UserDateTimeFactory;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -123,6 +124,18 @@ class CustomTimesheetEditForm extends AbstractType
         }
 
         return true;
+    }
+
+    protected function addDescription(FormBuilderInterface $builder)
+    {
+        $builder
+            ->add('description', TextareaType::class, [
+                'label' => 'label.description',
+                'required' => false,
+                'attr' => [
+                    'rows' => 1
+                ]
+            ]);
     }
 
     protected function addDuration(FormBuilderInterface $builder)

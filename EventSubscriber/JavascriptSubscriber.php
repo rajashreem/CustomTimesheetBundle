@@ -16,33 +16,29 @@ class JavascriptSubscriber implements EventSubscriberInterface
 
     public function renderJavascript(ThemeEvent $event)
     {
-        $script = $this->getScriptToExpandTextArea();
+        $script = $this->getScriptToResizeDescriptionTextArea();
         $event->addContent("<script type='text/javascript'>${script}</script>");
     }
 
-    public function getScriptToExpandTextArea() {
+    public function getScriptToResizeDescriptionTextArea() {
         return <<<SCRIPT
-        var autoExpand = function (field) {
-                // Reset field height
-                field.style.height = 'inherit';
-
-                // Get the computed styles for the element
-                var computed = window.getComputedStyle(field);
-
-                // Calculate the height
-                var height = parseInt(computed.getPropertyValue('border-top-width'), 10)
-                    + parseInt(computed.getPropertyValue('padding-top'), 10)
-                    + field.scrollHeight
-                    + parseInt(computed.getPropertyValue('padding-bottom'), 10)
-                    + parseInt(computed.getPropertyValue('border-bottom-width'), 10);
-
-                field.style.height = height + 'px';
-            };
-
             document.addEventListener('input', function (event) {
-                if (event.target.tagName.toLowerCase() !== 'textarea') return;
-                autoExpand(event.target);
+                descriptionTextArea = $('#custom_timesheet_edit_form_description');
+                
+                if($(event.target).is(descriptionTextArea)) {
+                    numberOfRows = descriptionTextArea.val().split("\\n").length;
+                    descriptionTextArea.attr('rows', numberOfRows);
+                }
             }, false);
+                
+            document.addEventListener('modal-show', function() {
+                descriptionTextArea = $('#custom_timesheet_edit_form_description');
+                
+                if(descriptionTextArea.val()) {
+                    numberOfRows = descriptionTextArea.val().split("\\n").length;
+                    descriptionTextArea.attr('rows', numberOfRows);
+                }
+            });
 SCRIPT;
     }
 
