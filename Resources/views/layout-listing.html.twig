@@ -52,19 +52,11 @@
 
         {% set day = null %}
         {% set dayDuration = 0 %}
-        {% set dayRate = {} %}
         {% set lastEntry = null %}
         {% for entry in entries %}
-            {%- set customerCurrency = entry.project.customer.currency -%}
             {%- if day is same as(null) -%}
                 {% set day = entry.begin|date_short %}
             {% endif %}
-            {%- if showSummary and day is not same as(entry.begin|date_short) -%}
-                {{ _self.summary(day, dayDuration, dayRate, columns, canSeeRate, canSeeUsername, showStartEndTime, tableName, metaColumns) }}
-                {% set day = entry.begin|date_short %}
-                {% set dayDuration = 0 %}
-                {% set dayRate = {} %}
-            {%- endif -%}
             {% set class = '' %}
             {% if checkOverlappingDesc or checkOverlappingAsc %}
                 {% if lastEntry is not null and entry.end is not null and entry.user is same as (lastEntry.user) %}
@@ -119,56 +111,9 @@
                     {{ block('row_action') }}
                 </td>
             </tr>
-            {%- if entry.end -%}
-                {% if dayRate[customerCurrency] is not defined %}
-                    {% set dayRate = dayRate|merge({(customerCurrency): 0}) %}
-                {% endif %}
-                {% set dayRate = dayRate|merge({(customerCurrency): dayRate[customerCurrency] + entry.rate}) %}
-            {%- endif -%}
-            {%- set dayDuration = dayDuration + entry.duration -%}
-            {% set lastEntry = entry %}
         {% endfor %}
-
-        {% if showSummary %}
-            {{ _self.summary(day, dayDuration, dayRate, columns, canSeeRate, canSeeUsername, showStartEndTime, tableName, metaColumns) }}
-        {% endif %}
 
         {{ tables.data_table_footer(entries, paginationRoute, multiUpdateForm) }}
     {% endif %}
 
 {% endblock %}
-
-{% macro summary(day, duration, dayRates, columns, canSeeRate, canSeeUsername, showStartEndTime, tableName, metaColumns) %}
-    {% import "macros/datatables.html.twig" as tables %}
-    <tr class="summary info">
-        <td></td>
-        <td class="text-nowrap">{{ day }}</td>
-        {% if showStartEndTime %}
-            <td class="{{ tables.data_table_column_class(tableName, columns, 'starttime') }}"></td>
-            <td class="{{ tables.data_table_column_class(tableName, columns, 'endtime') }}"></td>
-        {% endif %}
-        <td class="text-nowrap {{ tables.data_table_column_class(tableName, columns, 'duration') }}">{{ duration|duration }}</td>
-        {% if canSeeRate %}
-            <td class="text-nowrap {{ tables.data_table_column_class(tableName, columns, 'rate') }}">
-                {% for currency, rate in dayRates %}
-                    {{ rate|money(currency) }}
-                    {% if not loop.last %}
-                        <br>
-                    {% endif %}
-                {% endfor %}
-            </td>
-        {% endif %}
-        <td class="{{ tables.data_table_column_class(tableName, columns, 'customer') }}"></td>
-        <td class="{{ tables.data_table_column_class(tableName, columns, 'project') }}"></td>
-        <td class="{{ tables.data_table_column_class(tableName, columns, 'activity') }}"></td>
-        <td class="{{ tables.data_table_column_class(tableName, columns, 'description') }}"></td>
-        {% if canSeeUsername %}
-            <td class="{{ tables.data_table_column_class(tableName, columns, 'username') }}"></td>
-        {% endif %}
-        <td class="{{ tables.data_table_column_class(tableName, columns, 'tags') }}"></td>
-        {% for field in metaColumns %}
-            <td class="{{ tables.data_table_column_class(tableName, columns, 'mf_' ~ field.name) }}"></td>
-        {% endfor %}
-        <td class="actions"></td>
-    </tr>
-{% endmacro %}
