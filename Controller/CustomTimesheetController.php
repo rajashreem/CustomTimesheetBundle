@@ -121,6 +121,19 @@ class CustomTimesheetController extends TimesheetAbstractController
         return $this->edit($entry, $request, '@CustomTimesheet/edit.html.twig');
     }
 
+    /**
+     * @Route(path="/{id}/duplicate", name="custom_timesheet_duplicate", methods={"GET", "POST"})
+     * @Security("is_granted('duplicate', entry)")
+     *
+     * @param Timesheet $entry
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
+    public function duplicateAction(Timesheet $entry, Request $request)
+    {
+        return $this->duplicate($entry, $request, '@CustomTimesheet/edit.html.twig');
+    }
+
     protected function index($page, Request $request, string $renderTemplate, string $location): Response
     {
         $query = new TimesheetQuery();
@@ -196,21 +209,7 @@ class CustomTimesheetController extends TimesheetAbstractController
         $createForm = $this->getCreateForm($entry, $mode);
         $createForm->handleRequest($request);
 
-        if ($createForm->isSubmitted() && $createForm->isValid()) {
-            try {
-                $this->service->saveNewTimesheet($entry);
-                $this->flashSuccess('action.update.success');
-
-                return $this->redirectToRoute($this->getTimesheetRoute());
-            } catch (\Exception $ex) {
-                $this->flashError('action.update.error', ['%reason%' => $ex->getMessage()]);
-            }
-        }
-
-        return $this->render($renderTemplate, [
-            'timesheet' => $entry,
-            'form' => $createForm->createView(),
-        ]);
+        return $this->handleCreateTimesheetForm($entry, $createForm, $renderTemplate);
     }
 
     protected function edit(Timesheet $entry, Request $request, string $renderTemplate): Response
@@ -235,12 +234,50 @@ class CustomTimesheetController extends TimesheetAbstractController
         ]);
     }
 
+    protected function duplicate(Timesheet $entry, Request $request, string $renderTemplate): Response
+    {
+        $duplicateEntry = clone $entry;
+
+        $mode = $this->getTrackingMode();
+        $createForm = $this->getCreateForm($duplicateEntry, $mode);
+        $createForm->handleRequest($request);
+
+        return $this->handleCreateTimesheetForm($duplicateEntry, $createForm, $renderTemplate);
+    }
+
+
     protected function getCreateForm(Timesheet $entry, TrackingModeInterface $mode): FormInterface
     {
         return $this->createForm(CustomTimesheetEditForm::class, $entry, [
             'action' => $this->generateUrl($this->getCreateRoute()),
             'allow_begin_datetime' => $mode->canEditBegin(),
             'customer' => true,
+        ]);
+    }
+
+    /**
+     * @param Timesheet $entry
+     * @param FormInterface $createForm
+     * @param string $renderTemplate
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
+    protected function handleCreateTimesheetForm($entry, $createForm, string $renderTemplate)
+    {
+        if ($createForm->isSubmitted() && $createForm->isValid()) {
+            try {
+                $this->service->saveNewTimesheet($entry);
+                $this->flashSuccess('action.update.success');
+
+                return $this->redirectToRoute($this->getTimesheetRoute());
+            } catch (\Exception $ex) {
+                $this->flashError('action.update.error', ['%reason%' => $ex->getMessage()]);
+            }
+        }
+
+        return $this->render($renderTemplate, [
+            'timesheet' => $entry,
+            'form' => $createForm->createView(),
         ]);
     }
 
