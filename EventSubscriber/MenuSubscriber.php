@@ -56,6 +56,10 @@ class MenuSubscriber implements EventSubscriberInterface
             $menu->addItem(
                 new MenuItemModel('custom_timesheet', 'My timesheets', 'custom_timesheet', [], 'fas fa-book')
             );
+            $menu->addItem(
+                new MenuItemModel('custom_calendar', 'Calendar', 'custom_calendar', [], 'far fa-calendar-alt')
+            );
+
         }
     }
 }
