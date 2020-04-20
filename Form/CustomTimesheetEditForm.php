@@ -131,7 +131,7 @@ class CustomTimesheetEditForm extends AbstractType
         $builder
             ->add('description', TextareaType::class, [
                 'label' => 'label.description',
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'rows' => 1
                 ]
