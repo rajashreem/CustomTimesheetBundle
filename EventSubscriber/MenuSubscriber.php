@@ -54,7 +54,7 @@ class MenuSubscriber implements EventSubscriberInterface
         $menu = $event->getMenu();
         if ($auth->isGranted('ROLE_USER')) {
             $menu->addItem(
-                new MenuItemModel('custom_timesheet', 'My timesheets', 'custom_timesheet', [], 'fas fa-book')
+                new MenuItemModel('custom_timesheet', 'My timesheets', 'custom_timesheet', [], 'fas fa-clock')
             );
             $menu->addItem(
                 new MenuItemModel('custom_calendar', 'Calendar', 'custom_calendar', [], 'far fa-calendar-alt')
