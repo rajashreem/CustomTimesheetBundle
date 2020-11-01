@@ -46,7 +46,7 @@ class CustomTimesheetController extends TimesheetAbstractController
     /**
      * @var TimesheetService
      */
-    private $service;
+    protected $service;
 
     /**
      * EmptyDescriptionCheckerController constructor.
